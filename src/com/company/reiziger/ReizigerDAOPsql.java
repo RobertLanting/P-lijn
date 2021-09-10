@@ -1,15 +1,19 @@
 package com.company.reiziger;
 
+import com.company.adres.AdresDAO;
+import com.company.adres.AdresDAOPsql;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReizigerDAOPsql implements ReizigerDAO{
 
-    private Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost/ovchip?user=postgres&password=moro3645");
+    private Connection conn;
+    private AdresDAO aDAO;
 
-    public ReizigerDAOPsql() throws SQLException {
-
+    public ReizigerDAOPsql(Connection connection) throws SQLException {
+        this.conn = connection;
     }
 
     /**
@@ -91,7 +95,8 @@ public class ReizigerDAOPsql implements ReizigerDAO{
      * deze methode zoekt een reiziger in de database via zijn id
      */
     @Override
-    public Reiziger findById(int id) {
+    public Reiziger findById(int id) throws SQLException {
+        this.aDAO = new AdresDAOPsql(conn);
         try {
 
             PreparedStatement statement = conn.prepareStatement("SELECT * FROM reiziger WHERE reiziger_id = ?");
@@ -102,11 +107,13 @@ public class ReizigerDAOPsql implements ReizigerDAO{
 
             while (result.next()) {
 
-                return new Reiziger(result.getInt("reiziger_id"),
+                Reiziger r = new Reiziger(result.getInt("reiziger_id"),
                         result.getString("voorletters"),
                         result.getString("tussenvoegsel"),
                         result.getString("achternaam"),
                         result.getDate("geboortedatum"));
+                r.setAdres(aDAO.findByReiziger(r));
+                return r;
 
             }
 
@@ -122,7 +129,8 @@ public class ReizigerDAOPsql implements ReizigerDAO{
      * deze methode zoekt een reiziger in de database via zijn geboortedatum
      */
     @Override
-    public List<Reiziger> findByGbdatum(String datum) {
+    public List<Reiziger> findByGbdatum(String datum) throws SQLException {
+        this.aDAO = new AdresDAOPsql(conn);
         List<Reiziger> reizigers = new ArrayList<>();
         try {
 
@@ -134,13 +142,14 @@ public class ReizigerDAOPsql implements ReizigerDAO{
 
             while (result.next()) {
 
-                reizigers.add(new Reiziger(
+                Reiziger r = new Reiziger(
                         result.getInt("reiziger_id"),
                         result.getString("voorletters"),
                         result.getString("tussenvoegsel"),
                         result.getString("achternaam"),
-                        result.getDate("geboortedatum")));
-
+                        result.getDate("geboortedatum"));
+                r.setAdres(aDAO.findByReiziger(r));
+                reizigers.add(r);
             }
 
 
@@ -154,7 +163,8 @@ public class ReizigerDAOPsql implements ReizigerDAO{
      * deze methode geeft alle reizigers in de database
      */
     @Override
-    public List<Reiziger> findAll() {
+    public List<Reiziger> findAll() throws SQLException {
+        this.aDAO = new AdresDAOPsql(conn);
         List<Reiziger> reizigers = new ArrayList<>();
         try {
 
@@ -164,12 +174,14 @@ public class ReizigerDAOPsql implements ReizigerDAO{
 
             while (result.next()) {
 
-                reizigers.add(new Reiziger(
+                Reiziger r = new Reiziger(
                         result.getInt("reiziger_id"),
                         result.getString("voorletters"),
                         result.getString("tussenvoegsel"),
                         result.getString("achternaam"),
-                        result.getDate("geboortedatum")));
+                        result.getDate("geboortedatum"));
+                r.setAdres(aDAO.findByReiziger(r));
+                reizigers.add(r);
 
             }
 

@@ -1,6 +1,7 @@
 package com.company.reiziger;
 
-import java.util.Calendar;
+import com.company.adres.Adres;
+
 import java.util.Date;
 
 public class Reiziger {
@@ -10,6 +11,7 @@ public class Reiziger {
     private String tussenvoegsel;
     private String achternaam;
     private Date geboortedatum;
+    private Adres adres;
 
 
     public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
@@ -29,7 +31,7 @@ public class Reiziger {
     }
 
     public String getNaam() {
-        return voorletters + tussenvoegsel + achternaam;
+        return voorletters + " " + tussenvoegsel + " " + achternaam;
     }
 
     public String getVoorletters() {
@@ -64,6 +66,14 @@ public class Reiziger {
         this.geboortedatum = geboortedatum;
     }
 
+    public Adres getAdres() {
+        return adres;
+    }
+
+    public void setAdres(Adres adres) {
+        this.adres = adres;
+    }
+
     @Override
     public String toString() {
         return "Reiziger{" +
@@ -72,6 +82,7 @@ public class Reiziger {
                 ", tussenvoegsel='" + tussenvoegsel + '\'' +
                 ", achternaam='" + achternaam + '\'' +
                 ", geboortedatum=" + geboortedatum +
+                ", adres=" + adres +
                 '}';
     }
 }

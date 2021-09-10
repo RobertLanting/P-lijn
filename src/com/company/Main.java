@@ -1,5 +1,8 @@
 package com.company;
 
+import com.company.adres.Adres;
+import com.company.adres.AdresDAO;
+import com.company.adres.AdresDAOPsql;
 import com.company.reiziger.Reiziger;
 import com.company.reiziger.ReizigerDAO;
 import com.company.reiziger.ReizigerDAOPsql;
@@ -13,10 +16,11 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
         getConnection();
-        ReizigerDAO rDAO = new ReizigerDAOPsql();
+        ReizigerDAO rDAO = new ReizigerDAOPsql(connection);
+        AdresDAO aDAO = new AdresDAOPsql(connection);
         testReizigerDAO(rDAO);
+        testAdresDAO(aDAO,rDAO);
         closeConnection();
-
     }
 
     /**
@@ -98,4 +102,53 @@ public class Main {
         // Voeg aanvullende tests van de ontbrekende CRUD-operaties in.
 
     }
+
+    private static void testAdresDAO(AdresDAO aDAO, ReizigerDAO rDAO) throws SQLException {
+        System.out.println("\n---------- Test adresDAO -------------");
+
+        //haal alle adressen op uit de database
+        List<Adres> adressen = aDAO.findAll();
+        System.out.println("[Test] AdresDAO.findAll() geeft de volgende Adressen:");
+        for (Adres a : adressen) {
+            System.out.println(a);
+        }
+        System.out.println();
+
+        // verander de reiziger in de database
+        Adres adres = new Adres(1, "3511LX", "37", "Visschersplein", "Utrecht", rDAO.findById(1));
+        System.out.println("[Test] eerst:\n" + adres.getPostcode() + "\n" +
+                adres.getHuisnummer() + "\n" +
+                adres.getStraat() + "\n" +
+                adres.getWoonplaats() + "\n");
+        adres.setPostcode("3645");
+        adres.setHuisnummer("66");
+        adres.setStraat("pijlstaartlaan");
+        adres.setWoonplaats("vinkeveen");
+        aDAO.update(adres);
+        adres = aDAO.findByReiziger(rDAO.findById(1));
+        System.out.println("[Test] eerst:\n" + adres.getPostcode() + "\n" +
+                adres.getHuisnummer() + "\n" +
+                adres.getStraat() + "\n" +
+                adres.getWoonplaats() + "\n");
+
+        // zoek een adres met een reiziger
+        adres = aDAO.findByReiziger(rDAO.findById(1));
+        System.out.println("[Test] AdresDAO.findByReiziger() geeft het volgende adres:");
+        System.out.println(adres.toString() + "\n");
+
+        // delete een adres uit de database
+        System.out.print("[Test] Eerst " + adressen.size() + " reizigers, na ReizigerDAO.delete() ");
+
+        aDAO.delete(adres);
+        adressen = aDAO.findAll();
+        System.out.println(adressen.size() + " reizigers\n");
+
+        // Maak een nieuw adres aan en persisteer deze in de database
+
+        System.out.print("[Test] Eerst " + adressen.size() + " reizigers, na ReizigerDAO.save() ");
+        aDAO.save(adres);
+        adressen = aDAO.findAll();
+        System.out.println(adressen.size() + " reizigers\n");
+    }
+
     }
