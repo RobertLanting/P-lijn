@@ -1,5 +1,6 @@
 package com.company.reiziger;
 
+import com.company.adres.Adres;
 import com.company.adres.AdresDAO;
 import com.company.adres.AdresDAOPsql;
 
@@ -12,8 +13,19 @@ public class ReizigerDAOPsql implements ReizigerDAO{
     private Connection conn;
     private AdresDAO aDAO;
 
-    public ReizigerDAOPsql(Connection connection) throws SQLException {
+    public ReizigerDAOPsql(Connection connection) {
         this.conn = connection;
+    }
+
+    public ReizigerDAOPsql(Connection connection, AdresDAOPsql aDAO) {
+        this.conn = connection;
+        this.aDAO = aDAO;
+        aDAO.setReizigerDAO(this);
+
+    }
+
+    public void setAdresDao(AdresDAOPsql aDAO) {
+        this.aDAO = aDAO;
     }
 
     /**
@@ -33,6 +45,10 @@ public class ReizigerDAOPsql implements ReizigerDAO{
             statement.setDate(5, (Date) reiziger.getGeboortedatum());
 
             statement.executeUpdate();
+
+            if (reiziger.getAdres() != null) {
+                aDAO.save(reiziger.getAdres());
+            }
 
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -63,6 +79,9 @@ public class ReizigerDAOPsql implements ReizigerDAO{
             statement.setInt(5,reiziger.getId());
 
             statement.executeUpdate();
+            if (reiziger.getAdres() != null) {
+                aDAO.update(reiziger.getAdres());
+            }
 
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -77,6 +96,10 @@ public class ReizigerDAOPsql implements ReizigerDAO{
     @Override
     public boolean delete(Reiziger reiziger) {
         try {
+
+            if (reiziger.getAdres() != null) {
+                aDAO.delete(reiziger.getAdres());
+            }
 
             PreparedStatement statement = conn.prepareStatement("DELETE FROM reiziger WHERE reiziger_id = ?");
 
@@ -96,7 +119,6 @@ public class ReizigerDAOPsql implements ReizigerDAO{
      */
     @Override
     public Reiziger findById(int id) throws SQLException {
-        this.aDAO = new AdresDAOPsql(conn);
         try {
 
             PreparedStatement statement = conn.prepareStatement("SELECT * FROM reiziger WHERE reiziger_id = ?");
@@ -130,7 +152,6 @@ public class ReizigerDAOPsql implements ReizigerDAO{
      */
     @Override
     public List<Reiziger> findByGbdatum(String datum) throws SQLException {
-        this.aDAO = new AdresDAOPsql(conn);
         List<Reiziger> reizigers = new ArrayList<>();
         try {
 
@@ -164,7 +185,6 @@ public class ReizigerDAOPsql implements ReizigerDAO{
      */
     @Override
     public List<Reiziger> findAll() throws SQLException {
-        this.aDAO = new AdresDAOPsql(conn);
         List<Reiziger> reizigers = new ArrayList<>();
         try {
 

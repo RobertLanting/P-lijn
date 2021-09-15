@@ -17,10 +17,20 @@ public class AdresDAOPsql implements AdresDAO{
 
 
 
-    public AdresDAOPsql(Connection connection) throws SQLException {
+    public AdresDAOPsql(Connection connection){
         this.conn = connection;
     }
 
+    public AdresDAOPsql(Connection connection, ReizigerDAOPsql rDAO) {
+        this.conn = connection;
+        this.rDAO = rDAO;
+        rDAO.setAdresDao(this);
+
+    }
+
+    public void setReizigerDAO(ReizigerDAOPsql rDAO) {
+        this.rDAO = rDAO;
+    }
 
     @Override
     public boolean save(Adres adres) {
@@ -121,7 +131,6 @@ public class AdresDAOPsql implements AdresDAO{
 
     @Override
     public List<Adres> findAll() throws SQLException {
-        this.rDAO = new ReizigerDAOPsql(conn);
         List<Adres> adressen = new ArrayList<>();
         try {
 
