@@ -31,6 +31,9 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         this.rDAO = rDAO;
     }
 
+    /**
+     * deze methode slaat een OVChipkaart op in de database
+     */
     @Override
     public boolean save(OVChipkaart ovChipkaart) {
         try {
@@ -54,6 +57,9 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
 
     }
 
+    /**
+     * deze methode veranderd de data van een OVChipkaart in de database
+     */
     @Override
     public boolean update(OVChipkaart ovChipkaart) {
         try {
@@ -78,6 +84,9 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         return true;
     }
 
+    /**
+     * deze methode verwijderd de OVChipkaart uit de database
+     */
     @Override
     public boolean delete(OVChipkaart ovChipkaart) {
         try {
@@ -95,6 +104,9 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         return true;
     }
 
+    /**
+     * deze methode zoekt een OVChipkaart in de database via een reiziger
+     */
     @Override
     public List<OVChipkaart> findByReiziger(Reiziger reiziger) {
         List<OVChipkaart> OVkaarten = new ArrayList<>();
@@ -124,6 +136,9 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         return OVkaarten;
     }
 
+    /**
+     * deze methode geeft alle OVChipkaarten in de database
+     */
     @Override
     public List<OVChipkaart> findAll() {
         List<OVChipkaart> kaarten = new ArrayList<>();

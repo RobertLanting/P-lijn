@@ -32,6 +32,9 @@ public class AdresDAOPsql implements AdresDAO{
         this.rDAO = rDAO;
     }
 
+    /**
+     * deze methode slaat een adres op in de database
+     */
     @Override
     public boolean save(Adres adres) {
         try {
@@ -55,6 +58,9 @@ public class AdresDAOPsql implements AdresDAO{
         return true;
     }
 
+    /**
+     * deze methode veranderd de data van een adres in de database
+     */
     @Override
     public boolean update(Adres adres) {
         try {
@@ -81,6 +87,9 @@ public class AdresDAOPsql implements AdresDAO{
         return true;
     }
 
+    /**
+     * deze methode verwijderd de adres uit de database
+     */
     @Override
     public boolean delete(Adres adres) {
         try {
@@ -99,7 +108,9 @@ public class AdresDAOPsql implements AdresDAO{
     }
 
 
-
+    /**
+     * deze methode zoekt een adres in de database via een reiziger
+     */
     @Override
     public Adres findByReiziger(Reiziger reiziger) {
         try {
@@ -129,6 +140,9 @@ public class AdresDAOPsql implements AdresDAO{
         return null;
     }
 
+    /**
+     * deze methode geeft alle adressen in de database
+     */
     @Override
     public List<Adres> findAll() {
         List<Adres> adressen = new ArrayList<>();

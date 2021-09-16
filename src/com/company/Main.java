@@ -193,7 +193,7 @@ public class Main {
             System.out.println(o.toString() + "\n");
         }
 
-        // Maak een nieuw adres aan en persisteer deze in de database
+        // Maak een nieuw OVChipkaart aan en persisteer deze in de database
         ovChipkaarten = oDAO.findAll();
         System.out.print("[Test] Eerst " + ovChipkaarten.size() + " OVKaarten, na OVkaartDAO.save() ");
         ovChipkaart = new OVChipkaart(11111, java.sql.Date.valueOf("2020-02-17"), 2, 30, rDAO.findById(1));
@@ -201,7 +201,7 @@ public class Main {
         ovChipkaarten = oDAO.findAll();
         System.out.println(ovChipkaarten.size() + " OVKaarten\n");
 
-        // delete een adres uit de database
+        // delete een OVChipkaart uit de database
         ovChipkaarten = oDAO.findAll();
         System.out.print("[Test] Eerst " + ovChipkaarten.size() + " OVKaarten, na OVKaartDAO.delete() ");
 
