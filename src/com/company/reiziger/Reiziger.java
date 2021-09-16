@@ -1,8 +1,11 @@
 package com.company.reiziger;
 
+import com.company.OVChipkaart.OVChipkaart;
 import com.company.adres.Adres;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Reiziger {
 
@@ -12,6 +15,7 @@ public class Reiziger {
     private String achternaam;
     private Date geboortedatum;
     private Adres adres;
+    private List<OVChipkaart> OVChipkaarten = new ArrayList<>();
 
 
     public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
@@ -74,6 +78,18 @@ public class Reiziger {
         this.adres = adres;
     }
 
+    public void addOVkaart(OVChipkaart ovChipkaart) {
+        OVChipkaarten.add(ovChipkaart);
+    }
+
+    public void removeOVkaart(OVChipkaart ovChipkaart) {
+        OVChipkaarten.remove(ovChipkaart);
+    }
+
+    public List<OVChipkaart> getOVChipkaarten() {
+        return OVChipkaarten;
+    }
+
     @Override
     public String toString() {
         return "Reiziger{" +
@@ -83,6 +99,7 @@ public class Reiziger {
                 ", achternaam='" + achternaam + '\'' +
                 ", geboortedatum=" + geboortedatum +
                 ", adres=" + adres +
+                ", OVChipkaarten=" + OVChipkaarten +
                 '}';
     }
 }

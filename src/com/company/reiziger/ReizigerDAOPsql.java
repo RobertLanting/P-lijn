@@ -1,5 +1,8 @@
 package com.company.reiziger;
 
+import com.company.OVChipkaart.OVChipkaart;
+import com.company.OVChipkaart.OVChipkaartDAO;
+import com.company.OVChipkaart.OVChipkaartDAOPsql;
 import com.company.adres.Adres;
 import com.company.adres.AdresDAO;
 import com.company.adres.AdresDAOPsql;
@@ -12,9 +15,19 @@ public class ReizigerDAOPsql implements ReizigerDAO{
 
     private Connection conn;
     private AdresDAO aDAO;
+    private OVChipkaartDAO oDAO;
 
     public ReizigerDAOPsql(Connection connection) {
         this.conn = connection;
+    }
+
+    public ReizigerDAOPsql(Connection connection, AdresDAOPsql aDAO, OVChipkaartDAOPsql oDAO) {
+        this.conn = connection;
+        this.oDAO = oDAO;
+        this.aDAO = aDAO;
+        aDAO.setReizigerDAO(this);
+        oDAO.setReizigerDAO(this);
+
     }
 
     public ReizigerDAOPsql(Connection connection, AdresDAOPsql aDAO) {
@@ -24,8 +37,19 @@ public class ReizigerDAOPsql implements ReizigerDAO{
 
     }
 
+    public ReizigerDAOPsql(Connection connection, OVChipkaartDAOPsql oDAO) {
+        this.conn = connection;
+        this.oDAO = oDAO;
+        oDAO.setReizigerDAO(this);
+
+    }
+
     public void setAdresDao(AdresDAOPsql aDAO) {
         this.aDAO = aDAO;
+    }
+
+    public void setOVChipkaartDao(OVChipkaartDAOPsql oDAO) {
+        this.oDAO = oDAO;
     }
 
     /**
@@ -48,6 +72,12 @@ public class ReizigerDAOPsql implements ReizigerDAO{
 
             if (reiziger.getAdres() != null) {
                 aDAO.save(reiziger.getAdres());
+            }
+
+            if (reiziger.getOVChipkaarten() != null) {
+                for (OVChipkaart o : reiziger.getOVChipkaarten()) {
+                    oDAO.save(o);
+                }
             }
 
         } catch (Exception exception) {
@@ -83,6 +113,12 @@ public class ReizigerDAOPsql implements ReizigerDAO{
                 aDAO.update(reiziger.getAdres());
             }
 
+            if (reiziger.getOVChipkaarten() != null) {
+                for (OVChipkaart o : reiziger.getOVChipkaarten()) {
+                    oDAO.update(o);
+                }
+            }
+
         } catch (Exception exception) {
             exception.printStackTrace();
             return false;
@@ -99,6 +135,12 @@ public class ReizigerDAOPsql implements ReizigerDAO{
 
             if (reiziger.getAdres() != null) {
                 aDAO.delete(reiziger.getAdres());
+            }
+
+            if (reiziger.getOVChipkaarten() != null) {
+                for (OVChipkaart o : reiziger.getOVChipkaarten()) {
+                    oDAO.delete(o);
+                }
             }
 
             PreparedStatement statement = conn.prepareStatement("DELETE FROM reiziger WHERE reiziger_id = ?");
@@ -134,7 +176,18 @@ public class ReizigerDAOPsql implements ReizigerDAO{
                         result.getString("tussenvoegsel"),
                         result.getString("achternaam"),
                         result.getDate("geboortedatum"));
+
+                if (aDAO != null) {
                 r.setAdres(aDAO.findByReiziger(r));
+                }
+
+                if (oDAO != null) {
+                    if (oDAO.findByReiziger(r) != null) {
+                        for (OVChipkaart o : oDAO.findByReiziger(r)) {
+                            r.addOVkaart(o);
+                        }
+                    }
+                }
                 return r;
 
             }
@@ -201,6 +254,14 @@ public class ReizigerDAOPsql implements ReizigerDAO{
                         result.getString("achternaam"),
                         result.getDate("geboortedatum"));
                 r.setAdres(aDAO.findByReiziger(r));
+
+                if (oDAO != null) {
+                    if (oDAO.findByReiziger(r) != null) {
+                        for (OVChipkaart o : oDAO.findByReiziger(r)) {
+                            r.addOVkaart(o);
+                        }
+                    }
+                }
                 reizigers.add(r);
 
             }

@@ -1,5 +1,8 @@
 package com.company;
 
+import com.company.OVChipkaart.OVChipkaart;
+import com.company.OVChipkaart.OVChipkaartDAO;
+import com.company.OVChipkaart.OVChipkaartDAOPsql;
 import com.company.adres.Adres;
 import com.company.adres.AdresDAO;
 import com.company.adres.AdresDAOPsql;
@@ -16,10 +19,12 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
         getConnection();
-        AdresDAO aDAO = new AdresDAOPsql(connection, new ReizigerDAOPsql(connection));
-        ReizigerDAO rDAO = new ReizigerDAOPsql(connection, new AdresDAOPsql(connection));
+        AdresDAO aDAO = new AdresDAOPsql(connection, new ReizigerDAOPsql(connection, new OVChipkaartDAOPsql(connection)));
+        ReizigerDAO rDAO = new ReizigerDAOPsql(connection, new AdresDAOPsql(connection), new OVChipkaartDAOPsql(connection));
+        OVChipkaartDAO oDAO = new OVChipkaartDAOPsql(connection, new ReizigerDAOPsql(connection, new AdresDAOPsql(connection)));
         testReizigerDAO(rDAO);
         testAdresDAO(aDAO,rDAO);
+        testOVChipkaartDAO(oDAO,rDAO);
         closeConnection();
     }
 
@@ -114,7 +119,7 @@ public class Main {
         }
         System.out.println();
 
-        // verander de reiziger in de database
+        // verander een adres in de database
         Adres adres = new Adres(1, "3511LX", "37", "Visschersplein", "Utrecht", rDAO.findById(1));
         System.out.println("[Test] eerst:\n" + adres.getPostcode() + "\n" +
                 adres.getHuisnummer() + "\n" +
@@ -126,7 +131,7 @@ public class Main {
         adres.setWoonplaats("vinkeveen");
         aDAO.update(adres);
         adres = aDAO.findByReiziger(rDAO.findById(1));
-        System.out.println("[Test] eerst:\n" + adres.getPostcode() + "\n" +
+        System.out.println("na update:\n" + adres.getPostcode() + "\n" +
                 adres.getHuisnummer() + "\n" +
                 adres.getStraat() + "\n" +
                 adres.getWoonplaats() + "\n");
@@ -137,18 +142,77 @@ public class Main {
         System.out.println(adres.toString() + "\n");
 
         // delete een adres uit de database
-        System.out.print("[Test] Eerst " + adressen.size() + " reizigers, na ReizigerDAO.delete() ");
+        System.out.print("[Test] Eerst " + adressen.size() + " Adressen, na AdresDAO.delete() ");
 
         aDAO.delete(adres);
         adressen = aDAO.findAll();
-        System.out.println(adressen.size() + " reizigers\n");
+        System.out.println(adressen.size() + " Adressen\n");
 
         // Maak een nieuw adres aan en persisteer deze in de database
 
-        System.out.print("[Test] Eerst " + adressen.size() + " reizigers, na ReizigerDAO.save() ");
+        System.out.print("[Test] Eerst " + adressen.size() + " adressen, na AdresDAO.save() ");
+        adres = new Adres(1, "3511LX", "37", "Visschersplein", "Utrecht", rDAO.findById(1));
         aDAO.save(adres);
         adressen = aDAO.findAll();
-        System.out.println(adressen.size() + " reizigers\n");
+        System.out.println(adressen.size() + " Adressen\n");
+    }
+
+    private static void testOVChipkaartDAO(OVChipkaartDAO oDAO, ReizigerDAO rDAO) throws SQLException {
+        System.out.println("\n---------- Test OVChipkaartDAO -------------");
+
+        //haal alle OVChipkaarten op uit de database
+        List<OVChipkaart> OVkaarten = oDAO.findAll();
+        System.out.println("[Test] OVChipkaartDAO.findAll() geeft de volgende kaarten:");
+        for (OVChipkaart o : OVkaarten) {
+            System.out.println(o);
+        }
+        System.out.println();
+
+        // verander een OVChipkaart in de database
+        OVChipkaart ovChipkaart = new OVChipkaart(90537, java.sql.Date.valueOf("2019-12-31"), 2, 20, rDAO.findById(5));
+        System.out.println("[Test] eerst:\n" + ovChipkaart.getGeldigTot() + "\n" +
+                ovChipkaart.getKlasse() + "\n" +
+                ovChipkaart.getSaldo() + "\n");
+        ovChipkaart.setGeldigTot(java.sql.Date.valueOf("2020-06-16"));
+        ovChipkaart.setKlasse(1);
+        ovChipkaart.setSaldo(15);
+        oDAO.update(ovChipkaart);
+        ovChipkaart = oDAO.findByReiziger(rDAO.findById(5)).get(1);
+        System.out.println("na update:\n" + ovChipkaart.getGeldigTot() + "\n" +
+                ovChipkaart.getKlasse() + "\n" +
+                ovChipkaart.getSaldo() + "\n");
+        ovChipkaart.setGeldigTot(java.sql.Date.valueOf("2019-12-31"));
+        ovChipkaart.setKlasse(2);
+        ovChipkaart.setSaldo(20);
+        oDAO.update(ovChipkaart);
+
+        // zoek OVKaarten met een reiziger
+        List<OVChipkaart> ovChipkaarten = oDAO.findByReiziger(rDAO.findById(2));
+        System.out.println("[Test] OVkaartenDAO.findByReiziger() geeft de volgende OVChipkaarten:");
+        for (OVChipkaart o : ovChipkaarten) {
+            System.out.println(o.toString() + "\n");
+        }
+
+        // Maak een nieuw adres aan en persisteer deze in de database
+        ovChipkaarten = oDAO.findAll();
+        System.out.print("[Test] Eerst " + ovChipkaarten.size() + " OVKaarten, na OVkaartDAO.save() ");
+        ovChipkaart = new OVChipkaart(11111, java.sql.Date.valueOf("2020-02-17"), 2, 30, rDAO.findById(1));
+        oDAO.save(ovChipkaart);
+        ovChipkaarten = oDAO.findAll();
+        System.out.println(ovChipkaarten.size() + " OVKaarten\n");
+
+        // delete een adres uit de database
+        ovChipkaarten = oDAO.findAll();
+        System.out.print("[Test] Eerst " + ovChipkaarten.size() + " OVKaarten, na OVKaartDAO.delete() ");
+
+        oDAO.delete(ovChipkaart);
+        ovChipkaarten = oDAO.findAll();
+        System.out.println(ovChipkaarten.size() + " OVKaarten\n");
+
+
+
+
+
     }
 
     }

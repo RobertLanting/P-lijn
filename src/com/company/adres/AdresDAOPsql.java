@@ -130,7 +130,7 @@ public class AdresDAOPsql implements AdresDAO{
     }
 
     @Override
-    public List<Adres> findAll() throws SQLException {
+    public List<Adres> findAll() {
         List<Adres> adressen = new ArrayList<>();
         try {
 
