@@ -6,6 +6,9 @@ import com.company.OVChipkaart.OVChipkaartDAOPsql;
 import com.company.adres.Adres;
 import com.company.adres.AdresDAO;
 import com.company.adres.AdresDAOPsql;
+import com.company.product.Product;
+import com.company.product.ProductDAO;
+import com.company.product.ProductDAOPsql;
 import com.company.reiziger.Reiziger;
 import com.company.reiziger.ReizigerDAO;
 import com.company.reiziger.ReizigerDAOPsql;
@@ -21,10 +24,12 @@ public class Main {
         getConnection();
         AdresDAO aDAO = new AdresDAOPsql(connection, new ReizigerDAOPsql(connection, new OVChipkaartDAOPsql(connection)));
         ReizigerDAO rDAO = new ReizigerDAOPsql(connection, new AdresDAOPsql(connection), new OVChipkaartDAOPsql(connection));
-        OVChipkaartDAO oDAO = new OVChipkaartDAOPsql(connection, new ReizigerDAOPsql(connection, new AdresDAOPsql(connection)));
+        OVChipkaartDAO oDAO = new OVChipkaartDAOPsql(connection, new ReizigerDAOPsql(connection, new AdresDAOPsql(connection)), new ProductDAOPsql(connection));
+        ProductDAO pDAO = new ProductDAOPsql(connection, new OVChipkaartDAOPsql(connection));
         testReizigerDAO(rDAO);
         testAdresDAO(aDAO,rDAO);
         testOVChipkaartDAO(oDAO,rDAO);
+        testProductDAO(pDAO,oDAO);
         closeConnection();
     }
 
@@ -209,10 +214,61 @@ public class Main {
         ovChipkaarten = oDAO.findAll();
         System.out.println(ovChipkaarten.size() + " OVKaarten\n");
 
+    }
 
+    private static void testProductDAO(ProductDAO pDAO, OVChipkaartDAO oDAO) throws SQLException {
+        System.out.println("\n---------- Test ProductDAO -------------");
 
+        //haal alle OVChipkaarten op uit de database
+        List<Product> producten = pDAO.findAll();
+        System.out.println("[Test] ProductDAO.findAll() geeft de volgende kaarten:");
+        for (Product p : producten) {
+            System.out.println(p);
+        }
+        System.out.println();
 
+        // verander een OVChipkaart in de database
+        Product product = new Product(1, "Dagkaart 2e klas", "Een hele dag onbeperkt reizen met de trein", 50.60);
+        System.out.println("[Test] eerst:\n" + product.getNaam() + "\n" +
+                product.getBeschrijving() + "\n" +
+                product.getPrijs() + "\n");
+        product.setNaam("Weekkaart 1e klas");
+        product.setBeschrijving("De hele week gratis reizen 1e klas");
+        product.setPrijs(40.50);
+        pDAO.update(product);
+        product = pDAO.findAll().stream().filter(p -> p.getProduct_nummer() == 1).findAny().get();
+        System.out.println("nu :\n" + product.getNaam() + "\n" +
+                product.getBeschrijving() + "\n" +
+                product.getPrijs() + "\n");
+        product.setNaam("Dagkaart 2e klas");
+        product.setBeschrijving("Een hele dag onbeperkt reizen met de trein");
+        product.setPrijs(50.60);
+        pDAO.update(product);
+
+        // zoek OVKaarten met een reiziger
+        List<Product> producten2 = pDAO.findByOVChipkaart(oDAO.findAll().get(0));
+        System.out.println("[Test] ProductDAO.findByOVKaart() geeft de volgende producten:");
+        for (Product p : producten2) {
+            System.out.println(p.toString() + "\n");
+        }
+
+        // Maak een nieuw OVChipkaart aan en persisteer deze in de database
+        producten = pDAO.findAll();
+        System.out.print("[Test] Eerst " + producten.size() + " producten, na ProductDAO.save() ");
+        product = new Product(7, "Maandpas 2e klas", "Voor de hele maand gratis met de trein", 100);
+        pDAO.save(product);
+        producten = pDAO.findAll();
+        System.out.println(producten.size() + " producten\n");
+
+        // delete een OVChipkaart uit de database
+        producten = pDAO.findAll();
+        System.out.print("[Test] Eerst " + producten.size() + " producten, na productDAO.delete() ");
+
+        pDAO.delete(product);
+        producten = pDAO.findAll();
+        System.out.println(producten.size() + " producten\n");
 
     }
+
 
     }

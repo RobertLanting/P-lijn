@@ -1,8 +1,11 @@
 package com.company.OVChipkaart;
 
+import com.company.product.Product;
 import com.company.reiziger.Reiziger;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class OVChipkaart {
 
@@ -11,6 +14,7 @@ public class OVChipkaart {
     private int Klasse;
     private double saldo;
     private Reiziger reiziger;
+    private List<Product> producten = new ArrayList<>();
 
 
     public OVChipkaart(int nummer, Date geldigTot, int klasse, double saldo, Reiziger reiziger) {
@@ -19,6 +23,16 @@ public class OVChipkaart {
         this.Klasse = klasse;
         this.saldo = saldo;
         this.reiziger = reiziger;
+    }
+
+    public void addProduct(Product product) {
+        producten.add(product);
+        product.addOVChipkaart(this);
+    }
+
+    public void removeProduct(Product product) {
+        producten.remove(product);
+        product.removeOVChipkaart(this);
     }
 
     public int getNummer() {
@@ -61,6 +75,10 @@ public class OVChipkaart {
         this.reiziger = reiziger;
     }
 
+    public List<Product> getProducten() {
+        return producten;
+    }
+
     @Override
     public String toString() {
         return "OVChipkaart{" +
@@ -69,6 +87,7 @@ public class OVChipkaart {
                 ", Klasse=" + Klasse +
                 ", saldo=" + saldo +
                 ", reiziger=" + reiziger.getNaam() +
+                ", producten=" + producten +
                 '}';
     }
 }
