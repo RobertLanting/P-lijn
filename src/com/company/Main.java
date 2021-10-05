@@ -22,10 +22,10 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
         getConnection();
-        AdresDAO aDAO = new AdresDAOPsql(connection, new ReizigerDAOPsql(connection, new OVChipkaartDAOPsql(connection)));
-        ReizigerDAO rDAO = new ReizigerDAOPsql(connection, new AdresDAOPsql(connection), new OVChipkaartDAOPsql(connection));
-        OVChipkaartDAO oDAO = new OVChipkaartDAOPsql(connection, new ReizigerDAOPsql(connection, new AdresDAOPsql(connection)), new ProductDAOPsql(connection));
-        ProductDAO pDAO = new ProductDAOPsql(connection, new OVChipkaartDAOPsql(connection));
+        ReizigerDAOPsql rDAO = new ReizigerDAOPsql(connection, new AdresDAOPsql(connection), new OVChipkaartDAOPsql(connection));
+        AdresDAOPsql aDAO = new AdresDAOPsql(connection, rDAO);
+        OVChipkaartDAOPsql oDAO = new OVChipkaartDAOPsql(connection, rDAO, new ProductDAOPsql(connection));
+        ProductDAOPsql pDAO = new ProductDAOPsql(connection, oDAO);
         testReizigerDAO(rDAO);
         testAdresDAO(aDAO,rDAO);
         testOVChipkaartDAO(oDAO,rDAO);
