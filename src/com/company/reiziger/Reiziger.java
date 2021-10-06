@@ -3,18 +3,28 @@ package com.company.reiziger;
 import com.company.OVChipkaart.OVChipkaart;
 import com.company.adres.Adres;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Entity
 public class Reiziger {
 
+    @Id
+    @Column(name = "reiziger_id")
     private int id;
     private String voorletters;
     private String tussenvoegsel;
     private String achternaam;
     private Date geboortedatum;
+
+    @OneToOne
+    @JoinColumn(name = "reiziger_id")
     private Adres adres;
+
+    @OneToMany
+    @JoinColumn(name = "reiziger_id")
     private List<OVChipkaart> OVChipkaarten = new ArrayList<>();
 
 
@@ -24,6 +34,10 @@ public class Reiziger {
         this.tussenvoegsel = tussenvoegsel;
         this.achternaam = achternaam;
         this.geboortedatum = geboortedatum;
+    }
+
+    public Reiziger() {
+
     }
 
     public int getId() {

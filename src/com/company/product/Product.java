@@ -2,15 +2,24 @@ package com.company.product;
 
 import com.company.OVChipkaart.OVChipkaart;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table (name = "product")
 public class Product {
 
+    @Id
+    @Column (name = "product_nummer")
     private int product_nummer;
     private String naam;
     private String beschrijving;
     private double prijs;
+
+    @ManyToMany
+    @JoinTable (name = "ov_chipkaart_product", joinColumns = {@JoinColumn (name = "product_nummer") },
+            inverseJoinColumns = { @JoinColumn (name = "kaart_nummer")} )
     private List<OVChipkaart> ovChipkaarten = new ArrayList<>();
 
 
@@ -19,6 +28,10 @@ public class Product {
         this.naam = naam;
         this.beschrijving = beschrijving;
         this.prijs = prijs;
+    }
+
+    public Product() {
+
     }
 
     public void addOVChipkaart(OVChipkaart ovChipkaart) {

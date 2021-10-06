@@ -3,26 +3,42 @@ package com.company.OVChipkaart;
 import com.company.product.Product;
 import com.company.reiziger.Reiziger;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Entity
+@Table (name = "ov_chipkaart")
 public class OVChipkaart {
 
+    @Id
+    @Column (name = "kaart_nummer")
     private int nummer;
-    private Date geldigTot;
+    private Date geldig_Tot;
     private int Klasse;
     private double saldo;
+
+    @ManyToOne
+    @JoinColumn (name = "reiziger_id")
     private Reiziger reiziger;
+
+    @ManyToMany
+    @JoinTable (name = "ov_chipkaart_product", joinColumns = { @JoinColumn (name = "kaart_nummer")},
+            inverseJoinColumns = { @JoinColumn (name = "product_nummer")} )
     private List<Product> producten = new ArrayList<>();
 
 
     public OVChipkaart(int nummer, Date geldigTot, int klasse, double saldo, Reiziger reiziger) {
         this.nummer = nummer;
-        this.geldigTot = geldigTot;
+        this.geldig_Tot = geldigTot;
         this.Klasse = klasse;
         this.saldo = saldo;
         this.reiziger = reiziger;
+    }
+
+    public OVChipkaart() {
+
     }
 
     public void addProduct(Product product) {
@@ -44,11 +60,11 @@ public class OVChipkaart {
     }
 
     public Date getGeldigTot() {
-        return geldigTot;
+        return geldig_Tot;
     }
 
     public void setGeldigTot(Date geldigTot) {
-        this.geldigTot = geldigTot;
+        this.geldig_Tot = geldigTot;
     }
 
     public int getKlasse() {
@@ -83,7 +99,7 @@ public class OVChipkaart {
     public String toString() {
         return "OVChipkaart{" +
                 "nummer=" + nummer +
-                ", geldigTot=" + geldigTot +
+                ", geldigTot=" + geldig_Tot +
                 ", Klasse=" + Klasse +
                 ", saldo=" + saldo +
                 ", reiziger=" + reiziger.getNaam() +
