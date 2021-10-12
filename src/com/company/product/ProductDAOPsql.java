@@ -64,6 +64,11 @@ public class ProductDAOPsql implements ProductDAO{
         try {
             if (product.getOvChipkaarten() != null) {
                 for (OVChipkaart o : product.getOvChipkaarten()) {
+                    PreparedStatement statement = conn.prepareStatement("delete from ov_chipkaart_product where kaart_nummer = ?");
+                    statement.setInt(1, o.getNummer());
+                    statement.executeUpdate();
+                }
+                for (OVChipkaart o : product.getOvChipkaarten()) {
 
                     PreparedStatement statement = conn.prepareStatement("INSERT INTO ov_chipkaart_product (kaart_nummer, product_nummer) " +
                             "VALUES (?,?)");
