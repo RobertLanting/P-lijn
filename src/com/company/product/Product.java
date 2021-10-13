@@ -17,9 +17,7 @@ public class Product {
     private String beschrijving;
     private double prijs;
 
-    @ManyToMany
-    @JoinTable (name = "ov_chipkaart_product", joinColumns = {@JoinColumn (name = "product_nummer") },
-            inverseJoinColumns = { @JoinColumn (name = "kaart_nummer")} )
+    @ManyToMany(mappedBy = "producten", cascade = CascadeType.ALL)
     private List<OVChipkaart> ovChipkaarten = new ArrayList<>();
 
 

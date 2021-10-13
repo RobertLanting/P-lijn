@@ -16,7 +16,7 @@ public class Adres {
     private String woonplaats;
 
     @OneToOne
-    @JoinColumn(name = "adres_id")
+    @JoinColumn(name = "reiziger_id")
     private Reiziger reiziger;
 
     public Adres(int id, String postcode, String huisnummer, String straat, String woonplaats, Reiziger reiziger) {

@@ -23,7 +23,7 @@ public class OVChipkaart {
     @JoinColumn (name = "reiziger_id")
     private Reiziger reiziger;
 
-    @ManyToMany
+    @ManyToMany (cascade = CascadeType.ALL)
     @JoinTable (name = "ov_chipkaart_product", joinColumns = { @JoinColumn (name = "kaart_nummer")},
             inverseJoinColumns = { @JoinColumn (name = "product_nummer")} )
     private List<Product> producten = new ArrayList<>();
